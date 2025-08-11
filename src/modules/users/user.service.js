@@ -60,7 +60,7 @@ export const signIn = async(req,res,next)=>{
       throw new Error("Email not found", { cause: 404 });
     }
     //check password
-    if(! await Compare({plainText:password,cyperText:user.password})){
+    if(! await Compare({plainText:password, ciperText:user.password})){
       throw new Error("Incorrect password", { cause: 404 });
     }
       const access_token = await generateToken({
@@ -134,8 +134,7 @@ export const confirmEmail = async(req,res,next)=>{
     if(!token){
       throw new Error("Token not provided", { cause: 400 });
     }
-    const decoded = await verifyToken({token,SINATURE:process.env.SINATURE});
-
+    const decoded = await verifyToken({token,SIGNATURE: process.env.ACCESS_TOKEN_USER});
     const user = await userModel.findOne({email:decoded.email, confirmed: false});
     if(!user){
       throw new Error("User not found", { cause: 404 });
@@ -144,16 +143,15 @@ export const confirmEmail = async(req,res,next)=>{
     await user.save();
     return res.status(200).json({message:"Email confirmed successfully",statusCode:200});
 
-
 }
 //============= Get User Profile =============
 export const getProfile = async(req,res,next)=>{
   
     //decrypt phone
-    var phone = Decrypt({ciperText:req.user.phone, SECRET_KEY:process.env.SECRET_KEY}).toString(CryptoJS.enc.Utf8);
+    var phone = Decrypt({cipherText:req.user.phone, SECRET_KEY :process.env.SECRET_KEY}).toString(CryptoJS.enc.Utf8);
     req.user.phone = phone;
 
-    return res.status(200).json({messag:"User signed in successfully",user:req.user});
+    return res.status(200).json({message:"User signed in successfully",user:req.user});
 
 }
 //============= logOut User ===============
@@ -213,8 +211,8 @@ export const refreshToken =async (req,res,next)=>{
 export const updatePassword = async (req, res, next) => {
     const { oldPassword, newPassword } = req.body;
 
-    if(!await Compare({plainText:oldPassword,cyperText:req.user.password})){
-      throw new Error("invalid old passeord");
+    if(!await Compare({plainText:oldPassword,ciperText :req.user.password})){
+      throw new Error("invalid old password");
       }
     const hash = Hash({plainText:newPassword});  
     req.user.password = hash;
@@ -224,7 +222,7 @@ export const updatePassword = async (req, res, next) => {
       expireAt: req?.decoded?.exp
     })
     
-    return res.status(200).json({ messag: "updata success", statusCode: 200 });
+    return res.status(200).json({ message: "updata success", statusCode: 200 });
 }
 //============= Forget Password =============
 export const forgetPassword = async (req, res, next) => {
@@ -275,7 +273,7 @@ export const updateProfile = async (req, res, next) => {
       throw new Error("Email already exists", { cause: 400 });
     eventEmitter.emit("sendEmail",{ email: req.user.email });
   req.user.email = email;
-  req.confirmed = false ;
+  req.user.confirmed = false ;
   }
   await req.user.save();
   return res.status(200).json({ message: "Profile updated successfully", statusCode: 200, user: req.user });
@@ -295,18 +293,13 @@ export const freezeProfile = async (req, res, next) => {
   if(id && req.user.role !== userRole.admin) {
     throw new Error("You are not authorized to freeze this profile", { cause: 403 });
   }
-  const user = await userModel.updateOne({
-    _id : id || req.user._id ,
-    isDeletes : {$exists : false}
-  },
-{
-  isDeletes :true ,
-  deletedBy : req.user._id
-},
-{
-  $inc : {__v: 1}
-}
-)
+  const user = await userModel.updateOne(
+    { _id: id || req.user._id, isDeleted: { $exists: false } },
+    {
+      $set: { isDeletes: true, deletedBy: req.user._id },
+      $inc: { __v: 1 }
+    }
+  );
 user.matchedCount?
    res.status(200).json({ message: "Profile frozen successfully", statusCode: 200 }):
    res.status(404).json({ message: "Profile not found or already frozen", statusCode: 404 });
@@ -318,18 +311,13 @@ export const unFreezeProfile = async (req, res, next) => {
   if(id && req.user.role !== userRole.admin) {
     throw new Error("You are not authorized to freeze this profile", { cause: 403 });
   }
-  const user = await userModel.updateOne({
-    _id : id || req.user._id ,
-    isDeletes : {$exists : true}
-  },
-{
-  $unset : {isDeletes : "" , deletedBy : ""}, 
-  
-},
-{
-  $inc : {__v: 1}
-}
-)
+  const user = await userModel.updateOne(
+    { _id: id || req.user._id, isDeleted: { $exists: true } },
+    {
+      $unset: { isDeletes: "", deletedBy: "" }, // أو { isDeletes: 1, deletedBy: 1 }
+      $inc: { __v: 1 }
+    }
+  );
 user.matchedCount?
    res.status(200).json({ message: "Profile frozen successfully", statusCode: 200 }):
    res.status(404).json({ message: "failed to un freeze", statusCode: 404 });
@@ -344,7 +332,7 @@ export const confirmEmailTask = async (req, res, next) => {
   }
   if (user.emailVerificationBanExpire && user.emailVerificationBanExpire > Date.now()) {
     return res.status(403).json({ message: "is banned for 5 minutes due to too many attempts" });
-
+  }
   if (!user.emailVerificationCode || user.emailVerificationExpire < Date.now() ) {
     return res.status(400).json({ message: "Verification code expired or not sent" });
   }
@@ -369,7 +357,7 @@ export const confirmEmailTask = async (req, res, next) => {
   await user.save();
   return res.status(201).json({message:"User created successfully",user});
 };
-}
+
 //================ update Profile Image =============
 export const updateProfileImage = async (req, res, next) => {
    const {secure_url,public_id} = await cloudinary.uploader.upload(req?.file?.path,{
@@ -378,6 +366,6 @@ export const updateProfileImage = async (req, res, next) => {
      const user= await userModel.findByIdAndUpdate({_id : req?.user?._id},{
        profileImag: {secure_url,public_id} ,
      });
-     await cloudinary.uploader.destroy(user?.profileImag?.public_id);
+    // await cloudinary.uploader.destroy(user?.profileImag?.public_id);
      return res.status(200).json({message:"Profile image updated successfully",user});
 }
