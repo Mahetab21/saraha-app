@@ -20,7 +20,7 @@ export const MulterLocal =({customPath="generals",customExtentions=[]}={})=>{
 })
 function fileFilter(req, file, cb) {
     if(!customExtentions.includes(file.mimetype)){
-        cb(new Error("Only png files are allowed"));
+        cb(new Error("Only png , jpeg and mp4 for video files are allowed"));
     }else{
         cb(null, true);
     }
@@ -34,7 +34,7 @@ export const MulterHost =({customExtentions=[]}={})=>{
   const storage = multer.diskStorage({})
   function fileFilter(req, file, cb) {
     if(!customExtentions.includes(file.mimetype)){
-        cb(new Error("Only png files are allowed"));
+        cb(new Error("Only png , jpeg and mp4 for video files are allowed"));
     }else{
         cb(null, true);
     }

@@ -1,11 +1,26 @@
 import { Router } from "express";
-import * as MS from "./message.service.js"
-import * as MV from "./message.validation.js"
+import * as MS from "./message.service.js";
+import * as MV from "./message.validation.js";
 import { validation } from "../../../middleware/validation.js";
-import {authentication} from "../../../middleware/authentication.js";
-const messageRouter = Router({caseSensitive:true,strict:true}); //mergeParams:true
+import { authentication } from "../../../middleware/authentication.js";
+const messageRouter = Router({ caseSensitive: true });
 
-messageRouter.post("/send",validation(MV.createMessageScheme),MS.createMessage)
-messageRouter.get("/list", authentication,MS.listMessages);
-messageRouter.get("/:id", validation(MV.getMessageScheme),authentication, MS.getMessage);
+messageRouter.post(
+  "/send",
+  validation(MV.createMessageScheme),
+  MS.createMessage
+);
+messageRouter.get("/list", authentication, MS.listMessages);
+messageRouter.get(
+  "/:id",
+  validation(MV.getMessageScheme),
+  authentication,
+  MS.getMessage
+);
+messageRouter.delete(
+  "/:id",
+  validation(MV.deleteMessageScheme),
+  authentication,
+  MS.deleteMessage
+);
 export default messageRouter;

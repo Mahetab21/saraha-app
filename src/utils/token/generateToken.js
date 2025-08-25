@@ -1,6 +1,5 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-
-export const generateToken = async({payload,SINATURE,options}={})=>{
-    return jwt.sign(payload,SINATURE,options)
-}
+export const generateToken = async ({ payload, SIGNATURE, options } = {}) => {
+  return jwt.sign(payload, SIGNATURE, options);
+};

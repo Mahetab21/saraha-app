@@ -4,12 +4,12 @@ export const validation = (schema) => {
     for (const key of Object.keys(schema)) {
       const result = schema[key].validate(req[key], { abortEarly: false });
       if (result?.error) {
-        validationError.push(result.error.details);
+        validationError.push(result.error?.details);
       }
     }
-    if (validationError.length) {
-      return res.status(400).json({ error: validationError });
+    if (validationError?.length) {
+      return res.status(400).json({message: "Validation error", error: validationError });
     }
-    return next();
+    next();
   };
 }
