@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { generalRules } from "../../../utils/generalRules/index.js";
+import generalRules from "../../../utils/generalRules/index.js";
 export const createMessageScheme = {
   body: Joi.object({
     userId: generalRules.id.required(),

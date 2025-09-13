@@ -70,13 +70,13 @@ userRoter.put(
   UC.resetPassword
 );
 userRoter.get("/profile/:id", UC.getProfileData);
-userRoter.delete(
+userRoter.patch(
   "/freezeProfile/:id",
   validation(UV.freezeProfileScheme),
   authentication,
   UC.freezeProfile
 );
-userRoter.delete(
+userRoter.patch(
   "/unFreezeProfile/:id",
   validation(UV.unFreezeProfileScheme),
   authentication,

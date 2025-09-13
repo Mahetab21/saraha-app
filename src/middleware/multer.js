@@ -1,46 +1,52 @@
 import multer from "multer";
-import fs from 'fs';
+import fs from "fs";
 export const allowedExtentions = {
-    image:["image/png", "image/jpeg"],
-    videos:["video/mp4"],
-    };
-export const MulterLocal =({customPath="generals",customExtentions=[]}={})=>{
-    const fullPath= `uploads/${customPath}`;
-    if(!fs.existsSync(fullPath)){
-        fs.mkdirSync(fullPath, { recursive: true });
-    }
-    const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, fullPath)
-  },
-  filename: function (req, file, cb) {
-  const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null,uniqueSuffix  + '-' +  file.originalname)
+  image: ["image/png", "image/jpeg"],
+  videos: ["video/mp4"],
+};
+export const MulterLocal = ({
+  customPath = "generals",
+  customExtentions = [],
+} = {}) => {
+  const fullPath = `uploads/${customPath}`;
+  if (!fs.existsSync(fullPath)) {
+    fs.mkdirSync(fullPath, { recursive: true });
   }
-})
-function fileFilter(req, file, cb) {
-    if(!customExtentions.includes(file.mimetype)){
-        cb(new Error("Only png , jpeg and mp4 for video files are allowed"));
-    }else{
-        cb(null, true);
-    }
-}
-
-const upload = multer({ storage ,fileFilter})
-return upload
-}
-export const MulterHost =({customExtentions=[]}={})=>{
-
-  const storage = multer.diskStorage({})
+  const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, fullPath);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + "-" + file.originalname);
+    },
+  });
   function fileFilter(req, file, cb) {
-    if(!customExtentions.includes(file.mimetype)){
-        cb(new Error("Only png , jpeg and mp4 for video files are allowed"));
-    }else{
-        cb(null, true);
+    if (!customExtentions.includes(file.mimetype)) {
+      cb(new Error("Only png , jpeg and mp4 for video files are allowed"));
+    } else {
+      cb(null, true);
     }
-}
+  }
 
-const upload = multer({ storage ,fileFilter})
-return upload
-}
+  const upload = multer({ storage, fileFilter });
+  return upload;
+};
+export const MulterHost = ({
+  customPath = "uploads",
+  customExtentions = [],
+} = {}) => {
+  const storage = multer.diskStorage({});
+
+  function fileFilter(req, file, cb) {
+    if (!customExtentions.includes(file.mimetype)) {
+      cb(new Error("Only png, jpeg and mp4 for video files are allowed"));
+    } else {
+      cb(null, true);
+    }
+  }
+
+  const upload = multer({ storage, fileFilter });
+  return upload;
+};
 export default MulterHost;

@@ -2,6 +2,10 @@ import userModel from "../../../DB/models/user.model.js";
 import messageModel from "../../../DB/models/message.model.js";
 //=============== create Message===============
 export const createMessage = async (req, res, next) => {
+  // Guard against missing body to avoid destructuring errors
+  if (!req.body) {
+    return res.status(400).json({ message: "Request body is required" });
+  }
   const { userId, content } = req.body;
   const userExist = await userModel.findOne({
     _id: userId,

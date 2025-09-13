@@ -22,15 +22,18 @@ import CryptoJS from "crypto-js";
 //============= SignUp User =============
 export const signUp = async (req, res, next) => {
   const { name, email, password, phone, gender, age } = req.body;
+
+  if (!req?.file) {
+    throw new Error("Image is required", { cause: 400 });
+  }
+
   const { secure_url, public_id } = await cloudinary.uploader.upload(
     req?.file?.path,
     {
       folder: "sarahaApp/users/profileImages/",
     }
   );
-  if (!req?.file) {
-    throw new Error("Image is required", { cause: 400 });
-  }
+
   //check emails
   if (await userModel.findOne({ email })) {
     throw new Error("Email already exists", { cause: 400 });
@@ -186,15 +189,22 @@ export const signIn = async (req, res, next) => {
 //============= logIn with gmail  =============
 export const logInWtithGmail = async (req, res, next) => {
   const { idToken } = req.body; //from frontend
+
+  if (!idToken) {
+    throw new Error("ID token is required", { cause: 400 });
+  }
+
   const client = new OAuth2Client();
-  async function verify() {
+
+  const verify = async () => {
     const ticket = await client.verifyIdToken({
       idToken,
       audience: process.env.WEB_CLIENT_ID,
     });
     const payload = ticket.getPayload();
     return payload;
-  }
+  };
+
   const { email, email_verified, picture, name } = await verify();
   //check email
   let user = await userModel.findOne({ email });
@@ -574,7 +584,7 @@ export const confirmEmailTask = async (req, res, next) => {
       confirmed: user.confirmed,
     },
   });
-};
+}; 
 
 //============= Resend Email OTP =============
 export const resendEmailOTP = async (req, res, next) => {
@@ -674,19 +684,30 @@ export const checkAccountStatus = async (req, res, next) => {
 
 //================ update Profile Image =============
 export const updateProfileImage = async (req, res, next) => {
+  if (!req?.file) {
+    throw new Error("Image is required", { cause: 400 });
+  }
+
   const { secure_url, public_id } = await cloudinary.uploader.upload(
     req?.file?.path,
     {
       folder: "sarahaApp/users/profileImages",
     }
   );
+
   const user = await userModel.findByIdAndUpdate(
     { _id: req?.user?._id },
     {
       profileImag: { secure_url, public_id },
-    }
+    },
+    { new: true }
   );
-  // await cloudinary.uploader.destroy(user?.profileImag?.public_id);
+
+  // Optionally destroy old image if it exists
+  // if (req.user.profileImag?.public_id) {
+  //   await cloudinary.uploader.destroy(req.user.profileImag.public_id);
+  // }
+
   return res
     .status(200)
     .json({ message: "Profile image updated successfully", user });

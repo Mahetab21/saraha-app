@@ -7,7 +7,7 @@ import morgan from "morgan";
 import chalk from "chalk";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-const bootstrab = async (app, express) => {
+const bootstrap = async (app, express) => {
   var whitelist = [process.env.FRONTEND_ORIGIN, undefined];
   var corsOptions = {
     origin: function (origin, callback) {
@@ -35,6 +35,8 @@ const bootstrab = async (app, express) => {
   app.use(limiter);
   app.use(helmet());
   app.use(express.json());
+  // Parse URL-encoded bodies (for form submissions)
+  app.use(express.urlencoded({ extended: true }));
   app.get("/", (req, res) => res.send("Hello World!"));
 
   checkConnectDB();
@@ -49,4 +51,4 @@ const bootstrab = async (app, express) => {
 
   app.use(globalErrorHandling);
 };
-export default bootstrab;
+export default bootstrap;

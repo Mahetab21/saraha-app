@@ -4,10 +4,18 @@ import { verifyToken } from "../utils/token/verifyToken.js";
 import revokeTokenModel from "../DB/models/revoke-token.model.js";
 export const authentication = async (req, res, next) => {
   const { authorization } = req.headers;
-  const [prefix, token] = authorization?.split(" ") || [];
+
+  if (!authorization) {
+    throw new Error("Authorization header is required", { cause: 401 });
+  }
+
+  const [prefix, token] = authorization.split(" ");
 
   if (!prefix || !token) {
-    throw new Error("token not exist", { cause: 404 });
+    throw new Error(
+      "Token format should be 'Bearer <token>' or 'admin <token>'",
+      { cause: 401 }
+    );
   }
 
   let signature = "";
