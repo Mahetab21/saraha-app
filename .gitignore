@@ -1,8 +1,7 @@
-.env
-src/config/.env
-node_modules/
-mongodb-data/
-uploads/
-*.log
-/.vscode/
-.DS_Store
+node_modules/  
+.env  
+src/config/.env  
+mongodb-data/  
+uploads/  
+*.log  
+/.vscode/  
