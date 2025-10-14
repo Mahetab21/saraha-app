@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saraha App API</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .api-info {
+        background: #e3f2fd;
+        padding: 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+      .button {
+        display: inline-block;
+        background: #2196f3;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 10px 5px;
+        transition: background 0.3s;
+      }
+      .button:hover {
+        background: #1976d2;
+      }
+      .endpoints {
+        margin-top: 30px;
+      }
+      .endpoint {
+        background: #f9f9f9;
+        padding: 15px;
+        margin: 10px 0;
+        border-left: 4px solid #4caf50;
+      }
+      .method {
+        font-weight: bold;
+        color: #4caf50;
+      }
+      .url {
+        font-family: monospace;
+        background: #e8e8e8;
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎯 Saraha App API</h1>
+
+      <div class="api-info">
+        <h2>Welcome to Saraha App API</h2>
+        <p>
+          This is an anonymous messaging platform API built with Node.js,
+          Express, and MongoDB.
+        </p>
+        <p>
+          Explore the API documentation and test endpoints using Swagger UI.
+        </p>
+      </div>
+
+      <div style="text-align: center">
+        <a href="/api-docs" class="button"
+          >📚 View API Documentation (Swagger UI)</a
+        >
+      </div>
+
+      <div class="endpoints">
+        <h3>🚀 Quick Access to Main Endpoints:</h3>
+
+        <div class="endpoint">
+          <span class="method">POST</span>
+          <span class="url">/users/signUp</span> <br />Register a new user
+          account
+        </div>
+
+        <div class="endpoint">
+          <span class="method">POST</span>
+          <span class="url">/users/signIn</span> <br />Sign in to your account
+        </div>
+
+        <div class="endpoint">
+          <span class="method">POST</span>
+          <span class="url">/message/send</span> <br />Send an anonymous message
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/message/list</span> <br />Get all received messages
+          (authentication required)
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/users/profile</span> <br />Get user profile
+          (authentication required)
+        </div>
+      </div>
+
+      <div class="api-info">
+        <h3>🔑 Authentication</h3>
+        <p>
+          Most endpoints require a Bearer token in the Authorization header:
+        </p>
+        <code>Authorization: Bearer YOUR_JWT_TOKEN</code>
+      </div>
+    </div>
+  </body>
+</html>
